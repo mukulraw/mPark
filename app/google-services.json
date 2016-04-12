@@ -1,0 +1,101 @@
+{
+  "project_info": {
+    "project_id": "mpark-project",
+    "project_number": "281891565290",
+    "name": "mPark Project"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:281891565290:android:9117473e01ba24c4",
+        "client_id": "android:com.example.mukul.m_park",
+        "client_type": 1,
+        "android_client_info": {
+          "package_name": "com.example.mukul.m_park",
+          "certificate_hash": []
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "281891565290-as24jejoipvvjs5i48376tkncb652pjo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.mukul.m_park",
+            "certificate_hash": "DB0A1427E0A13159BE076C3B0E6DCAF728186FFD"
+          }
+        },
+        {
+          "client_id": "281891565290-ne7o3lsa5r0r1chaaegrakefm7e4jbfa.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "cloud_messaging_service": {
+          "status": 1,
+          "apns_config": []
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "google_signin_service": {
+          "status": 2
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:281891565290:android:866cde7a2494ab10",
+        "client_id": "android:com.mrtechs.m_park",
+        "client_type": 1,
+        "android_client_info": {
+          "package_name": "com.mrtechs.m_park",
+          "certificate_hash": []
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "281891565290-2lm7u9g27c16o6h00jc9rkufctrr7i7h.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mrtechs.m_park",
+            "certificate_hash": "DB0A1427E0A13159BE076C3B0E6DCAF728186FFD"
+          }
+        },
+        {
+          "client_id": "281891565290-ne7o3lsa5r0r1chaaegrakefm7e4jbfa.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "cloud_messaging_service": {
+          "status": 1,
+          "apns_config": []
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "google_signin_service": {
+          "status": 2
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "client_info": [],
+  "ARTIFACT_VERSION": "1"
+}
