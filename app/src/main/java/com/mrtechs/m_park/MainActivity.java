@@ -16,6 +16,7 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
@@ -24,6 +25,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -87,6 +89,7 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
     private Context mContext;
     CircularImageView iv;
 
+    RelativeLayout rl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,6 +98,10 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
 
         pref = getSharedPreferences("MyLoc",Context.MODE_PRIVATE);
         edit = pref.edit();
+
+
+        rl = (RelativeLayout)findViewById(R.id.rellay);
+
 
 
         park = (Button) findViewById(R.id.button);
@@ -216,61 +223,53 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
 
                 if(marker.getTitle().equals("Your Car"))
                 {
-                    AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
 
-                    // Setting Dialog Title
-                    //alertDialog.setTitle("Confirm Delete...");
-
-                    // Setting Dialog Message
-                    alertDialog.setMessage("Are you sure you want remove this?");
-
-                    // Setting Icon to Dialog
-                    //alertDialog.setIcon(R.drawable.);
-
-                    // Setting Positive "Yes" Button
-                    alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog,int which) {
-
+                    Snackbar sc = Snackbar.make(rl,"Remove Car from here",Snackbar.LENGTH_LONG).setAction("REMOVE", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
                             park.setText(R.string.park);
                             edit.remove("lat");
                             edit.remove("lng");
                             edit.remove("ststus");
                             edit.apply();
                             marker.remove();
-
                         }
                     });
+                    sc.show();
 
-                    // Setting Negative "NO" Button
-                    alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
 
-                            dialog.cancel();
-                        }
-                    });
 
-                    // Showing Alert Message
-                    alertDialog.show();
+
+
                 }
                else {
-                    double lat = marker.getPosition().latitude;
 
-                    double lng = marker.getPosition().longitude;
+                    Snackbar snackbar = Snackbar.make(rl,"Press OPEN to view on Maps",Snackbar.LENGTH_LONG).setAction("OPEN", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            double lat = marker.getPosition().latitude;
 
-                    String format = "geo:0,0?q=" + lat + "," + lng + "( Location title)";
+                            double lng = marker.getPosition().longitude;
 
-                    Uri uri = Uri.parse(format);
+                            String format = "geo:0,0?q=" + lat + "," + lng + "( Location title)";
+
+                            Uri uri = Uri.parse(format);
 
 
-                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    try {
-                        startActivity(intent);
-                    }catch (ActivityNotFoundException e)
-                    {
-                        e.printStackTrace();
-                        Toast.makeText(getBaseContext(),"Google Maps is not installed",Toast.LENGTH_SHORT).show();
-                    }
+                            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            try {
+                                 startActivity(intent);
+                            }catch (ActivityNotFoundException e)
+                            {
+                                e.printStackTrace();
+                                Toast.makeText(getBaseContext(),"Google Maps is not installed",Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+                    snackbar.show();
+
+
 
 
                 }

@@ -3,7 +3,7 @@
     <string name="google_maps_key">AIzaSyBKC1_SO1jIAzH23QFXSu0zdewCnBaVTcQ</string>
     <string name="server_client_id"> 281891565290–2lm7u9g27c16o6h00jc9rkufctrr7i7h.apps.googleusercontent.com </string>
     <string name="park">PARK</string>
-    <string name="parked">PARKED</string>
+    <string name="parked">PARKED  </string>
     <string name="park_title">Park it and MArk it.</string>
     <string name="mrTexhs">powered by mrTechs.</string>
 </resources>
