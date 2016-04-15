@@ -6,4 +6,10 @@
     <string name="parked">PARKED  </string>
     <string name="park_title">Park it and MArk it.</string>
     <string name="mrTexhs">powered by mrTechs.</string>
+    <string name="tutorial">Tutorial</string>
+    <string name="Support">Support</string>
+    <string name="Email">Email Developer</string>
+    <string name="Developer_Name">Mukul Rawat</string>
+    <string name="ImageURL">https://lh4.googleusercontent.com/-ijnCKTKrhgU/AAAAAAAAAAI/AAAAAAAAAHc/YopZs21TtL4/photo.jpg</string>
+    <string name="Developer">(Developer)</string>
 </resources>

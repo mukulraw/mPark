@@ -2,6 +2,7 @@ package com.mrtechs.m_park;
 
 import android.Manifest;
 import android.app.Application;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -21,7 +22,10 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
 import android.os.Bundle;
+import android.support.v7.widget.PopupMenu;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -87,10 +91,12 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
     private LocationRequest mLocationRequest;
 
     private Context mContext;
-    CircularImageView iv;
+    CircularImageView iv,dialogImage;
 
     RelativeLayout rl;
 
+
+    Button btdialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,11 +108,15 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
 
         rl = (RelativeLayout)findViewById(R.id.rellay);
 
+        dialogImage = (CircularImageView)findViewById(R.id.imageDialog);
 
 
         park = (Button) findViewById(R.id.button);
 
         iv = (CircularImageView)findViewById(R.id.imageView);
+
+
+        btdialog = (Button)findViewById(R.id.buttondialog);
 
 
 
@@ -305,6 +315,31 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
             }
         });
 
+
+        iv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PopupMenu popupMenu = new PopupMenu(MainActivity.this , iv);
+                popupMenu.getMenuInflater().inflate(R.menu.popup_menu , popupMenu.getMenu());
+
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        if(item.getItemId()==R.id.supportId)
+                        {
+                            showDialog();
+
+
+
+
+                        }
+                        return true;
+                    }
+                });
+                popupMenu.show();
+            }
+        });
+
     }
 
     @Override
@@ -363,6 +398,43 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
         }
 
     }
+
+
+    public void showDialog()
+    {
+        Dialog dialog = new Dialog(MainActivity.this);
+        dialog.setContentView(R.layout.dialog);
+        dialog.setTitle(R.string.Support);
+        dialog.show();
+    }
+
+
+
+
+
+    protected void sendEmail() {
+        Log.i("Send email", "");
+        String[] TO = {"mukulraw199517@gmail.com"};
+        String[] CC = {""};
+        Intent emailIntent = new Intent(Intent.ACTION_SEND);
+
+        emailIntent.setData(Uri.parse("mailto:"));
+        emailIntent.setType("text/plain");
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, TO);
+        emailIntent.putExtra(Intent.EXTRA_CC, CC);
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "M-Park");
+        emailIntent.putExtra(Intent.EXTRA_TEXT, "Email message goes here");
+
+        try {
+            startActivity(Intent.createChooser(emailIntent, "Send mail..."));
+            finish();
+            Log.i("Finished sending email...", "");
+        }
+        catch (android.content.ActivityNotFoundException ex) {
+            Toast.makeText(MainActivity.this, "There is no email client installed.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
 
     @Override
     public void onConnected(Bundle bundle) {
@@ -463,11 +535,13 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
         }
     }
 
+
+
     public class loadImage extends AsyncTask<Void,Void,Void>
     {
 
         String src;
-        Bitmap myBitmap;
+        Bitmap myBitmap,dialogBM;
 
 
         loadImage(String src)
@@ -478,16 +552,22 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
         protected Void doInBackground(Void... params) {
             try {
                 URL url = new URL(src);
+
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
                 connection.setDoInput(true);
                 connection.connect();
+
                 InputStream input = connection.getInputStream();
+
                 myBitmap = BitmapFactory.decodeStream(input);
 
             } catch (IOException e) {
                 e.printStackTrace();
                 return null;
             }
+
+
             return null;
         }
 
@@ -495,8 +575,10 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             iv.setImageBitmap(myBitmap);
+
         }
     }
+
 
 
 
