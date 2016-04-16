@@ -1,16 +1,13 @@
 package com.mrtechs.m_park;
 
 import android.Manifest;
-import android.app.Application;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
@@ -20,17 +17,13 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
-import android.support.v7.app.AlertDialog;
 import android.os.Bundle;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.siyamed.shapeimageview.CircularImageView;
@@ -53,7 +46,6 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -62,6 +54,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -91,12 +84,13 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
     private LocationRequest mLocationRequest;
 
     private Context mContext;
-    CircularImageView iv,dialogImage;
+    CircularImageView iv;
 
     RelativeLayout rl;
 
+    Bitmap bitmap;
 
-    Button btdialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -108,15 +102,14 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
 
         rl = (RelativeLayout)findViewById(R.id.rellay);
 
-        dialogImage = (CircularImageView)findViewById(R.id.imageDialog);
-
 
         park = (Button) findViewById(R.id.button);
 
         iv = (CircularImageView)findViewById(R.id.imageView);
 
 
-        btdialog = (Button)findViewById(R.id.buttondialog);
+
+
 
 
 
@@ -327,9 +320,23 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
                     public boolean onMenuItemClick(MenuItem item) {
                         if(item.getItemId()==R.id.supportId)
                         {
-                            showDialog();
 
 
+
+                            Dialog dialog = new Dialog(MainActivity.this);
+                            dialog.setContentView(R.layout.dialog);
+                            dialog.setTitle(R.string.Support);
+                            CircularImageView dialogImage = (CircularImageView)dialog.findViewById(R.id.imageDialog);
+                            dialogImage.setImageBitmap(bitmap);
+                            dialog.show();
+
+                            Button dialogEmail = (Button)dialog.findViewById(R.id.buttondialog);
+                            dialogEmail.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    sendEmail();
+                                }
+                            });
 
 
                         }
@@ -341,6 +348,12 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
         });
 
     }
+
+
+
+
+
+
 
     @Override
     protected void onStart() {
@@ -400,13 +413,7 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
     }
 
 
-    public void showDialog()
-    {
-        Dialog dialog = new Dialog(MainActivity.this);
-        dialog.setContentView(R.layout.dialog);
-        dialog.setTitle(R.string.Support);
-        dialog.show();
-    }
+
 
 
 
@@ -567,6 +574,22 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
                 return null;
             }
 
+            try {
+                URL url = new URL("https://lh4.googleusercontent.com/-ijnCKTKrhgU/AAAAAAAAAAI/AAAAAAAAAHc/YopZs21TtL4/photo.jpg");
+
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+                connection.setDoInput(true);
+                connection.connect();
+
+                InputStream input = connection.getInputStream();
+
+                bitmap = BitmapFactory.decodeStream(input);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
 
             return null;
         }
