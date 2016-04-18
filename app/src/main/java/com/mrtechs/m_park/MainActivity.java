@@ -20,9 +20,12 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -323,27 +326,38 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
 
 
 
-                            Dialog dialog = new Dialog(MainActivity.this);
+                            final Dialog dialog = new Dialog(MainActivity.this);
                             dialog.setContentView(R.layout.dialog);
                             dialog.setTitle(R.string.Support);
                             CircularImageView dialogImage = (CircularImageView)dialog.findViewById(R.id.imageDialog);
                             dialogImage.setImageBitmap(bitmap);
                             dialog.show();
+                            Window window = dialog.getWindow();
+                            window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
                             Button dialogEmail = (Button)dialog.findViewById(R.id.buttondialog);
                             dialogEmail.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
+                                    dialog.dismiss();
                                     sendEmail();
                                 }
                             });
 
 
                         }
+                        else if(item.getItemId()==R.id.tutorialId)
+                        {
+                            Intent intent = new Intent(getBaseContext() , Tutorial.class);
+                            startActivity(intent);
+                        }
                         return true;
                     }
                 });
+
                 popupMenu.show();
+
+
             }
         });
 
@@ -597,6 +611,7 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
+            iv.setVisibility(View.VISIBLE);
             iv.setImageBitmap(myBitmap);
 
         }

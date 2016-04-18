@@ -15,8 +15,10 @@ import android.widget.Toast;
 
 public class StartActivity extends AppCompatActivity {
 
-    private static String[] PERMISSIONS_LOCATION = {Manifest.permission.ACCESS_COARSE_LOCATION,
-            Manifest.permission.ACCESS_FINE_LOCATION};
+
+    final private int REQUEST_CODE_ASK_PERMISSIONS = 123;
+
+    Thread th;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +29,7 @@ public class StartActivity extends AppCompatActivity {
 
 
 
-        Thread th = new Thread(new Runnable() {
+        th = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -50,25 +52,25 @@ public class StartActivity extends AppCompatActivity {
         if(cd.isConnectingToInternet())
         {
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                // Marshmallow+
-
-                if(ActivityCompat.checkSelfPermission(this , Manifest.permission.ACCESS_COARSE_LOCATION)!= PackageManager.PERMISSION_GRANTED||ActivityCompat.checkSelfPermission(this , Manifest.permission.ACCESS_FINE_LOCATION)!=PackageManager.PERMISSION_GRANTED)
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                int hasLocationPermission = checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION);
+                if(hasLocationPermission!=PackageManager.PERMISSION_GRANTED)
                 {
-                    requestLocationPErmission();
+                    //request permission
+                    requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION} , REQUEST_CODE_ASK_PERMISSIONS);
+                    return;
                 }
-                else
-                {
+                else{
+                    //permission is already granted
+
                     th.start();
                 }
-
-
-            } else {
-                // Pre-Marshmallow
-                th.start();
             }
 
-
+            else
+            {
+                th.start();
+            }
 
 
 
@@ -88,23 +90,33 @@ public class StartActivity extends AppCompatActivity {
 
 
 
-    private void requestLocationPErmission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            requestPermissions(PERMISSIONS_LOCATION,
-                    124);
 
-
-
-
-        }
-
-    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
+        switch (requestCode)
+        {
+            case REQUEST_CODE_ASK_PERMISSIONS:
+                if(grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                {
+//permission granted
+                    th.start();
+
+                }
+                else
+                {
+                    //permission denied
+Toast.makeText(this , "Permission denied" , Toast.LENGTH_SHORT).show();
+
+                    finish();
+                }
+
+                default:
+                    super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
 
 
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
     }
 }
