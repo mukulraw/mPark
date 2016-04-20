@@ -512,15 +512,58 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
         if(marker.getTitle().equals("Your Car"))
         {
 
-            Snackbar sc = Snackbar.make(rl,"Remove Car from here",Snackbar.LENGTH_LONG).setAction("REMOVE", new View.OnClickListener() {
+            Snackbar sc = Snackbar.make(rl,"Remove from map",Snackbar.LENGTH_LONG).setAction("REMOVE", new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    park.setText(R.string.park);
-                    edit.remove("lat");
-                    edit.remove("lng");
-                    edit.remove("ststus");
-                    edit.apply();
-                    marker.remove();
+
+                    final Dialog dialog = new Dialog(MainActivity.this);
+                    dialog.setContentView(R.layout.rnv);
+
+                    dialog.show();
+
+                    Button buttonRemove = (Button)dialog.findViewById(R.id.buttonremove);
+                    buttonRemove.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            park.setText(R.string.park);
+                            edit.remove("lat");
+                            edit.remove("lng");
+                            edit.remove("ststus");
+                            edit.apply();
+                            marker.remove();
+                            dialog.dismiss();
+                        }
+                    });
+
+                    Button buttonNavigate = (Button)dialog.findViewById(R.id.buttonnavigate);
+                    buttonNavigate.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            double lat = marker.getPosition().latitude;
+
+                            double lng = marker.getPosition().longitude;
+
+                            String format = "geo:0,0?q=" + lat + "," + lng + "( Location title)";
+
+                            Uri uri = Uri.parse(format);
+
+
+                            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            try {
+                                startActivity(intent);
+                            }catch (ActivityNotFoundException e)
+                            {
+                                e.printStackTrace();
+                                Toast.makeText(getBaseContext(),"Google Maps is not installed",Toast.LENGTH_SHORT).show();
+                            }
+
+                            dialog.dismiss();
+
+                        }
+                    });
+
+
                 }
             });
             sc.show();

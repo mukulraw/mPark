@@ -14,4 +14,7 @@
     <string name="fourth_page_text">Click the Button to Mark your car and place a marker</string>
     <string name="fifth_page_text">Click on marker to remove it</string>
     <string name="start">start</string>
+    <string name="dialog_title">Remove or open in map</string>
+    <string name="navigate">NAVIGATE</string>
+    <string name="remove">REMOVE</string>
 </resources>
