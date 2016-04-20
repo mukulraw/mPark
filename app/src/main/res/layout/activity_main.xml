@@ -4,7 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/rellay"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.mrtechs.m_park.MainActivity">
 
     <fragment
@@ -19,11 +18,12 @@
         android:layout_height="wrap_content"
         android:text="@string/park"
         android:id="@+id/button"
-        android:background="#be0202"
+        android:background="@color/colorPrimary"
         android:textColor="#ffffff"
         android:layout_marginEnd="12dp"
         android:layout_marginBottom="12dp"
         android:layout_alignParentBottom="true"
+        android:visibility="gone"
         android:layout_alignParentEnd="true" />
 
     <LinearLayout

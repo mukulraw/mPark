@@ -3,14 +3,9 @@ package com.mrtechs.m_park;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 public class StartActivity extends AppCompatActivity {
@@ -18,7 +13,7 @@ public class StartActivity extends AppCompatActivity {
 
     final private int REQUEST_CODE_ASK_PERMISSIONS = 123;
 
-    Thread th;
+    private Thread th;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,8 +27,10 @@ public class StartActivity extends AppCompatActivity {
         th = new Thread(new Runnable() {
             @Override
             public void run() {
+
+
                 try {
-                    Thread.sleep(1500);
+                    Thread.sleep(150);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -58,7 +55,6 @@ public class StartActivity extends AppCompatActivity {
                 {
                     //request permission
                     requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION} , REQUEST_CODE_ASK_PERMISSIONS);
-                    return;
                 }
                 else{
                     //permission is already granted

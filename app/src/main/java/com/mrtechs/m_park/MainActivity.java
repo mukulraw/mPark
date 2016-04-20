@@ -20,7 +20,6 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
@@ -57,7 +56,6 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -65,7 +63,7 @@ import java.util.List;
 
 @SuppressWarnings("ALL")
 public class MainActivity extends FragmentActivity implements GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener, LocationListener {
+        GoogleApiClient.OnConnectionFailedListener, LocationListener ,GoogleMap.OnMarkerClickListener , GoogleMap.OnMapLongClickListener{
 
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 1000;
     private static final int RC_SIGN_IN = 9001;
@@ -132,12 +130,35 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
             buildGoogleApiClient();
 
             createLocationRequest();
+            signIn();
+            showProgressDialog();
+            mMap.setTrafficEnabled(true);
+            mMap.setMyLocationEnabled(true);
+            mMap.setOnMarkerClickListener(this);
+            mMap.setOnMapLongClickListener(this);
+            park.setVisibility(View.VISIBLE);
+
+
+            //  tutorial here
+
         }
-        else
+
+
+        Boolean isTutorial = pref.getBoolean("tutorial" , false);
+//        Log.d("isTutorial" , isTutorial);
         {
-            GooglePlayServicesUtil.getErrorDialog(GooglePlayServicesUtil.isGooglePlayServicesAvailable(this),
-                    this, PLAY_SERVICES_RESOLUTION_REQUEST).show();
+            if(!isTutorial)
+            {
+                showTutorial();
+            }
         }
+
+
+     /*   else
+        {
+            GooglePlayServicesUtil.getErrorDialog(GooglePlayServicesUtil.(this),
+                    this, PLAY_SERVICES_RESOLUTION_REQUEST).show();
+        }*/
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
@@ -151,10 +172,10 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
         }
 
 
-        showProgressDialog();
-        signIn();
 
-        mMap.setTrafficEnabled(true);
+
+
+
    /*     manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         Boolean checkGps = manager.isProviderEnabled(LocationManager.GPS_PROVIDER);
         if (!checkGps) {
@@ -178,7 +199,7 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
             park.setText(R.string.parked);
         }
 
-        mMap.setMyLocationEnabled(true);
+
 
         park.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -223,93 +244,10 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
 
 
 
-        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(final Marker marker) {
-
-                if(marker.getTitle().equals("Your Car"))
-                {
-
-                    Snackbar sc = Snackbar.make(rl,"Remove Car from here",Snackbar.LENGTH_LONG).setAction("REMOVE", new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            park.setText(R.string.park);
-                            edit.remove("lat");
-                            edit.remove("lng");
-                            edit.remove("ststus");
-                            edit.apply();
-                            marker.remove();
-                        }
-                    });
-                    sc.show();
 
 
 
 
-
-                }
-               else {
-
-                    Snackbar snackbar = Snackbar.make(rl,"Press OPEN to view on Maps",Snackbar.LENGTH_LONG).setAction("OPEN", new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            double lat = marker.getPosition().latitude;
-
-                            double lng = marker.getPosition().longitude;
-
-                            String format = "geo:0,0?q=" + lat + "," + lng + "( Location title)";
-
-                            Uri uri = Uri.parse(format);
-
-
-                            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                            try {
-                                 startActivity(intent);
-                            }catch (ActivityNotFoundException e)
-                            {
-                                e.printStackTrace();
-                                Toast.makeText(getBaseContext(),"Google Maps is not installed",Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
-                    snackbar.show();
-
-
-
-
-                }
-
-
-
-                return false;
-            }
-        });
-
-
-        mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
-            @Override
-            public void onMapLongClick(LatLng latLng) {
-
-
-
-
-
-                switch (toggle)
-                {
-                    case "normal":mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-                        Log.d("asdasasd","satelite toggled");
-                        toggle="satelite";
-                        break;
-                    case "satelite":mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-                        Log.d("asdasasd","normal togglrd");
-                        toggle="normal";
-                        break;
-                }
-
-
-            }
-        });
 
 
         iv.setOnClickListener(new View.OnClickListener() {
@@ -348,8 +286,7 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
                         }
                         else if(item.getItemId()==R.id.tutorialId)
                         {
-                            Intent intent = new Intent(getBaseContext() , Tutorial.class);
-                            startActivity(intent);
+                            showTutorial();
                         }
                         return true;
                     }
@@ -364,6 +301,13 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
     }
 
 
+    public void showTutorial()
+    {
+        Intent intent = new Intent(getBaseContext() , Tutorial.class);
+        startActivity(intent);
+        edit.putBoolean("tutorial" , true);
+        edit.commit();
+    }
 
 
 
@@ -372,27 +316,31 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
     @Override
     protected void onStart() {
         super.onStart();
-        if (mGoogleApiClient != null) {
-            mGoogleApiClient.connect();
-        }
-        OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
-        if (opr.isDone()) {
-            // If the user's cached credentials are valid, the OptionalPendingResult will be "done"
-            // and the GoogleSignInResult will be available instantly.
-            GoogleSignInResult result = opr.get();
-            handleSignInResult(result);
-        } else {
-            // If the user has not previously signed in on this device or the sign-in has expired,
-            // this asynchronous branch will attempt to sign in the user silently.  Cross-device
-            // single sign-on will occur in this branch.
-            showProgressDialog();
-            opr.setResultCallback(new ResultCallback<GoogleSignInResult>() {
-                @Override
-                public void onResult(GoogleSignInResult googleSignInResult) {
 
-                    handleSignInResult(googleSignInResult);
-                }
-            });
+        if(checkPlayServices()) {
+
+            if (mGoogleApiClient != null) {
+                mGoogleApiClient.connect();
+            }
+            OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
+            if (opr.isDone()) {
+                // If the user's cached credentials are valid, the OptionalPendingResult will be "done"
+                // and the GoogleSignInResult will be available instantly.
+                GoogleSignInResult result = opr.get();
+                handleSignInResult(result);
+            } else {
+                // If the user has not previously signed in on this device or the sign-in has expired,
+                // this asynchronous branch will attempt to sign in the user silently.  Cross-device
+                // single sign-on will occur in this branch.
+                showProgressDialog();
+                opr.setResultCallback(new ResultCallback<GoogleSignInResult>() {
+                    @Override
+                    public void onResult(GoogleSignInResult googleSignInResult) {
+
+                        handleSignInResult(googleSignInResult);
+                    }
+                });
+            }
         }
 
     }
@@ -400,19 +348,22 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
     @Override
     protected void onResume() {
         super.onResume();
-        checkPlayServices();
+        if(checkPlayServices()) {
 
-        // Resuming the periodic location updates
-        boolean mRequestingLocationUpdates = false;
-        if (mGoogleApiClient.isConnected() && mRequestingLocationUpdates) {
-            startLocationUpdates();
+            // Resuming the periodic location updates
+            boolean mRequestingLocationUpdates = false;
+            if (mGoogleApiClient.isConnected() && mRequestingLocationUpdates) {
+                startLocationUpdates();
+            }
         }
 
     }
 
     protected void onPause() {
         super.onPause();
-        stopLocationUpdates();
+        if(checkPlayServices()) {
+            stopLocationUpdates();
+        }
     }
 
 
@@ -556,6 +507,82 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
         }
     }
 
+    @Override
+    public boolean onMarkerClick(final Marker marker) {
+        if(marker.getTitle().equals("Your Car"))
+        {
+
+            Snackbar sc = Snackbar.make(rl,"Remove Car from here",Snackbar.LENGTH_LONG).setAction("REMOVE", new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    park.setText(R.string.park);
+                    edit.remove("lat");
+                    edit.remove("lng");
+                    edit.remove("ststus");
+                    edit.apply();
+                    marker.remove();
+                }
+            });
+            sc.show();
+
+
+
+
+
+        }
+        else {
+
+            Snackbar snackbar = Snackbar.make(rl,"Press OPEN to view on Maps",Snackbar.LENGTH_LONG).setAction("OPEN", new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    double lat = marker.getPosition().latitude;
+
+                    double lng = marker.getPosition().longitude;
+
+                    String format = "geo:0,0?q=" + lat + "," + lng + "( Location title)";
+
+                    Uri uri = Uri.parse(format);
+
+
+                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    try {
+                        startActivity(intent);
+                    }catch (ActivityNotFoundException e)
+                    {
+                        e.printStackTrace();
+                        Toast.makeText(getBaseContext(),"Google Maps is not installed",Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+            snackbar.show();
+
+
+
+
+        }
+
+
+
+        return false;
+
+    }
+
+    @Override
+    public void onMapLongClick(LatLng latLng) {
+
+        switch (toggle)
+        {
+            case "normal":mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+                Log.d("asdasasd","satelite toggled");
+                toggle="satelite";
+                break;
+            case "satelite":mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                Log.d("asdasasd","normal togglrd");
+                toggle="normal";
+                break;
+        }
+    }
 
 
     public class loadImage extends AsyncTask<Void,Void,Void>
@@ -633,22 +660,42 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
 
         int checkGooglePlayServices = GooglePlayServicesUtil
                 .isGooglePlayServicesAvailable(this);
-        if (checkGooglePlayServices != ConnectionResult.SUCCESS) {
-		/*
-		* Google Play Services is missing or update is required
-		*  return code could be
-		* SUCCESS,
-		* SERVICE_MISSING, SERVICE_VERSION_UPDATE_REQUIRED,
-		* SERVICE_DISABLED, SERVICE_INVALID.
-		*/
-            GooglePlayServicesUtil.getErrorDialog(checkGooglePlayServices,
-                    this, PLAY_SERVICES_RESOLUTION_REQUEST).show();
+        Log.i("DEBUG_TAG",
+                "checkGooglePlayServicesAvailable, connectionStatusCode="
+                        + checkGooglePlayServices);
 
+        if (GooglePlayServicesUtil.isUserRecoverableError(checkGooglePlayServices)) {
+            showGooglePlayServicesAvailabilityErrorDialog(checkGooglePlayServices);
             return false;
         }
 
+
         return true;
 
+    }
+
+    void showGooglePlayServicesAvailabilityErrorDialog(
+            final int connectionStatusCode) {
+        this.runOnUiThread(new Runnable() {
+            public void run() {
+                final Dialog dialog = GooglePlayServicesUtil.getErrorDialog(
+                        connectionStatusCode,MainActivity.this,
+                        PLAY_SERVICES_RESOLUTION_REQUEST);
+                if (dialog == null) {
+                    Log.e("DEBUG_TAG",
+                            "couldn't get GooglePlayServicesUtil.getErrorDialog");
+                    Toast.makeText(getBaseContext(),
+                            "incompatible version of Google Play Services",
+                            Toast.LENGTH_LONG).show();
+
+                    Button button = (Button)findViewById(R.id.button);
+                    button.setVisibility(View.GONE);
+
+                    dialog.show();
+                }
+                //this was wrong here -->dialog.show();
+            }
+        });
     }
 
     @Override
@@ -666,6 +713,11 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.Co
                 finish();
             }
         }
+        if (requestCode == RC_SIGN_IN) {
+            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            handleSignInResult(result);
+        }
+
     }
 
     /**

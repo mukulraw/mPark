@@ -3,7 +3,7 @@
 
     <item
         android:id="@+id/tutorialId"
-        android:title="@string/tutorial"
+        android:title="@string/title_activity_tutorial"
         />
 
     <item

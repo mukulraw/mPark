@@ -17,26 +17,31 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Shows nearby Parking Spots and gas Stations"
+            android:text="@string/first_page_text"
             android:textColor="#ffffff"
             android:textSize="24sp"
             />
+    </LinearLayout>
 
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:src="@drawable/page1image"
+            android:src="@drawable/page1"
+            tools:ignore="ContentDescription"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
             />
 
 
 
-    </LinearLayout>
+
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
+        tools:ignore="ContentDescription"
         android:src="@drawable/right"/>
 
 

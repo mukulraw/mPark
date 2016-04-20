@@ -4,11 +4,10 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
-/**
- * Created by Mukul on 4/13/2016.
- */
-public class ConnectionDetector {
-    private Context _context;
+
+@SuppressWarnings("ALL")
+class ConnectionDetector {
+    private final Context _context;
 
     public ConnectionDetector(Context context){
         this._context = context;
@@ -19,9 +18,8 @@ public class ConnectionDetector {
         {
             NetworkInfo[] info = connectivity.getAllNetworkInfo();
             if (info != null)
-                for (int i = 0; i < info.length; i++)
-                    if (info[i].getState() == NetworkInfo.State.CONNECTED)
-                    {
+                for (NetworkInfo anInfo : info)
+                    if (anInfo.getState() == NetworkInfo.State.CONNECTED) {
                         return true;
                     }
 
